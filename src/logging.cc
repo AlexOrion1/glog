@@ -35,9 +35,9 @@
 #include <cassert>
 #include <iomanip>
 #include <string>
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>  // For _exit.
-#endif
+//#ifdef HAVE_UNISTD_H
+//# include <unistd.h>  // For _exit.
+//#endif
 #include <climits>
 #include <sys/types.h>
 #include <sys/stat.h>
