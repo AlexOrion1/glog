@@ -35,9 +35,9 @@
 #include <cassert>
 #include <iomanip>
 #include <string>
-//#ifdef HAVE_UNISTD_H
-//# include <unistd.h>  // For _exit.
-//#endif
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>  // For _exit.
+#endif
 #include <climits>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -1073,32 +1073,31 @@ bool LogFileObject::CreateLogfile(const string& time_pid_string) {
     if ( slash ) linkpath = string(filename, static_cast<size_t>(slash-filename+1));  // get dirname
     linkpath += linkname;
     unlink(linkpath.c_str());                    // delete old one if it exists
-
-//#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS)
     // TODO(hamaji): Create lnk file on Windows?
-//#elif defined(HAVE_UNISTD_H)
+#elif defined(HAVE_UNISTD_H)
     // We must have unistd.h.
     // Make the symlink be relative (in the same dir) so that if the
     // entire log directory gets relocated the link is still valid.
-  //  const char *linkdest = slash ? (slash + 1) : filename;
-    //if (symlink(linkdest, linkpath.c_str()) != 0) {
+    const char *linkdest = slash ? (slash + 1) : filename;
+    	if (symlink(linkdest, linkpath.c_str()) != 0) {
       // silently ignore failures
-    //}
+    }
 
     // Make an additional link to the log file in a place specified by
-    // FLAGS_log_link, if indicated
-   // if (!FLAGS_log_link.empty()) {
-    //  linkpath = FLAGS_log_link + "/" + linkname;
-      //unlink(linkpath.c_str());                  // delete old one if it exists
-      //if (symlink(filename, linkpath.c_str()) != 0) {
+    FLAGS_log_link, if indicated
+    if (!FLAGS_log_link.empty()) {
+      linkpath = FLAGS_log_link + "/" + linkname;
+      unlink(linkpath.c_str());                  // delete old one if it exists
+      if (symlink(filename, linkpath.c_str()) != 0) {
         // silently ignore failures
-      //}
-    //}
-//#endif
-  //}
+      }
+    }
+#endif
+  }
 
-  //return true;  // Everything worked
-//}
+  return true;  // Everything worked
+}
 
 void LogFileObject::Write(bool force_flush,
                           time_t timestamp,
