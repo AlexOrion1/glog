@@ -35,9 +35,9 @@
 #include <cassert>
 #include <iomanip>
 #include <string>
-#ifdef HAVE_UNISTD_H
-# include <io.h>  // For _exit.
-#endif
+//#ifdef HAVE_UNISTD_H
+//# include <unistd.h>  // For _exit.
+//#endif
 #include <climits>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -1075,24 +1075,24 @@ bool LogFileObject::CreateLogfile(const string& time_pid_string) {
     unlink(linkpath.c_str());                    // delete old one if it exists
 #if defined(OS_WINDOWS)
     // TODO(hamaji): Create lnk file on Windows?
-#elif defined(HAVE_UNISTD_H)
-    // We must have unistd.h.
-    // Make the symlink be relative (in the same dir) so that if the
-    // entire log directory gets relocated the link is still valid.
-    const char *linkdest = slash ? (slash + 1) : filename;
-    	if (symlink(linkdest, linkpath.c_str()) != 0) {
-      // silently ignore failures
-    }
+// #elif defined(HAVE_UNISTD_H)
+//     // We must have unistd.h.
+//     // Make the symlink be relative (in the same dir) so that if the
+//     // entire log directory gets relocated the link is still valid.
+//     const char *linkdest = slash ? (slash + 1) : filename;
+//     	if (symlink(linkdest, linkpath.c_str()) != 0) {
+//       // silently ignore failures
+//     }
 
-    // Make an additional link to the log file in a place specified by
-    FLAGS_log_link, if indicated
-    if (!FLAGS_log_link.empty()) {
-      linkpath = FLAGS_log_link + "/" + linkname;
-      unlink(linkpath.c_str());                  // delete old one if it exists
-      if (symlink(filename, linkpath.c_str()) != 0) {
-        // silently ignore failures
-      }
-    }
+//     // Make an additional link to the log file in a place specified by
+//     FLAGS_log_link, if indicated
+//     if (!FLAGS_log_link.empty()) {
+//       linkpath = FLAGS_log_link + "/" + linkname;
+//       unlink(linkpath.c_str());                  // delete old one if it exists
+//       if (symlink(filename, linkpath.c_str()) != 0) {
+//         // silently ignore failures
+//       }
+//     }
 #endif
   }
 
@@ -2292,18 +2292,18 @@ void GetExistingTempDirectories(vector<string>* list) {
 }
 
 void TruncateLogFile(const char *path, int64 limit, int64 keep) {
-#ifdef HAVE_UNISTD_H
-  struct stat statbuf;
-  const int kCopyBlockSize = 8 << 10;
-  char copybuf[kCopyBlockSize];
-  off_t read_offset, write_offset;
-  // Don't follow symlinks unless they're our own fd symlinks in /proc
-  int flags = O_RDWR;
-  // TODO(hamaji): Support other environments.
-#ifdef OS_LINUX
-  const char *procfd_prefix = "/proc/self/fd/";
-  if (strncmp(procfd_prefix, path, strlen(procfd_prefix))) flags |= O_NOFOLLOW;
-#endif
+// #ifdef HAVE_UNISTD_H
+//   struct stat statbuf;
+//   const int kCopyBlockSize = 8 << 10;
+//   char copybuf[kCopyBlockSize];
+//   off_t read_offset, write_offset;
+//   // Don't follow symlinks unless they're our own fd symlinks in /proc
+//   int flags = O_RDWR;
+//   // TODO(hamaji): Support other environments.
+// #ifdef OS_LINUX
+//   const char *procfd_prefix = "/proc/self/fd/";
+//   if (strncmp(procfd_prefix, path, strlen(procfd_prefix))) flags |= O_NOFOLLOW;
+// #endif
 
   int fd = open(path, flags);
   if (fd == -1) {
@@ -2370,14 +2370,14 @@ void TruncateLogFile(const char *path, int64 limit, int64 keep) {
 }
 
 void TruncateStdoutStderr() {
-#ifdef HAVE_UNISTD_H
-  int64 limit = MaxLogSize() << 20;
-  int64 keep = 1 << 20;
-  TruncateLogFile("/proc/self/fd/1", limit, keep);
-  TruncateLogFile("/proc/self/fd/2", limit, keep);
-#else
-  LOG(ERROR) << "No log truncation support.";
-#endif
+// #ifdef HAVE_UNISTD_H
+//   int64 limit = MaxLogSize() << 20;
+//   int64 keep = 1 << 20;
+//   TruncateLogFile("/proc/self/fd/1", limit, keep);
+//   TruncateLogFile("/proc/self/fd/2", limit, keep);
+// #else
+//   LOG(ERROR) << "No log truncation support.";
+// #endif
 }
 
 
