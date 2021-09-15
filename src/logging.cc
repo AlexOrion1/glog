@@ -36,7 +36,7 @@
 #include <iomanip>
 #include <string>
 #ifdef HAVE_UNISTD_H
-# include <unistd.h>  // For _exit.
+# include <io.h>  // For _exit.
 #endif
 #include <climits>
 #include <sys/types.h>
